@@ -1,0 +1,56 @@
+/* @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap'); */
+
+body {
+    height: 100vh;
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+}
+
+h3{
+    font-weight: 600;
+    font-family: sans-serif;
+}
+
+.auth-container {
+    background: linear-gradient(to bottom right, #ece9e9, #fff);
+    width: 100vw !important;
+    height: 100vh !important;
+    display: grid;
+    place-items: center;
+}
+
+.auth-box {
+    width: 100%;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.auth-box-wrapper{
+    width: 100%;
+    max-width: 460px;
+    padding: 20px;
+}
+
+/* Centering content properly */
+.auth-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.custom-alert {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    width: 300px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Adjustments for larger screens */
+@media (min-width: 1200px) {
+    .auth-box {
+        padding: 40px;
+    }
+}
