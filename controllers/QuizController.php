@@ -40,11 +40,11 @@ class QuizController
             $stmt->bindParam(':topic', $topic);
             $stmt->bindParam(':description', $description);
             $stmt->bindParam(':created_by', $created_by);
-            $stmt->execute();
+            $result = $stmt->execute();
 
-            return ["success" => true];
+            return json_encode(["success" => true]);
         } catch (PDOException $e) {
-            return ["success" => false, "message" => $e->getMessage()];
+            return json_encode(["success" => false, "message" => $e->getMessage()]);
         }
     }
 
@@ -60,19 +60,64 @@ class QuizController
         }
     }
 
-    public function getQuestionsByQuizId($quiz_id) {
+    public function getQuestionsByQuizId($quiz_id)
+    {
         try {
             $stmt = $this->conn->prepare("
-                SELECT q.id, q.question_text, q.question_type
+                SELECT q.id AS question_id, q.question_text, q.question_type, 
+                       o.options, o.answer
                 FROM questions q
+                LEFT JOIN options o ON q.id = o.question_id
                 WHERE q.quiz_id = :quiz_id
             ");
+
             $stmt->bindParam(":quiz_id", $quiz_id, PDO::PARAM_INT);
             $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // Process options JSON
+            foreach ($result as &$row) {
+                $row['options'] = json_decode($row['options'], true); // Decode JSON options
+            }
+            return $result;
         } catch (PDOException $e) {
             error_log("Database Error: " . $e->getMessage());
             return [];
         }
     }
+
+    public function addQuestionWithOptions($quiz_id, $question_text, $question_type, $options, $answer) {
+        try {
+            // Start Transaction
+            $this->conn->beginTransaction();
+    
+            // Insert Question
+            $stmt = $this->conn->prepare("INSERT INTO questions (quiz_id, question_text, question_type) VALUES (:quiz_id, :question_text, :question_type)");
+            $stmt->bindParam(":quiz_id", $quiz_id, PDO::PARAM_INT);
+            $stmt->bindParam(":question_text", $question_text, PDO::PARAM_STR);
+            $stmt->bindParam(":question_type", $question_type, PDO::PARAM_STR);
+            $stmt->execute();
+    
+            // Get the last inserted question ID
+            $question_id = $this->conn->lastInsertId();
+    
+            // Insert Options
+            $optionsJson = json_encode($options);
+            $stmt = $this->conn->prepare("INSERT INTO options (question_id, options, answer) VALUES (:question_id, :options, :answer)");
+            $stmt->bindParam(":question_id", $question_id, PDO::PARAM_INT);
+            $stmt->bindParam(":options", $optionsJson, PDO::PARAM_STR);
+            $stmt->bindParam(":answer", $answer, PDO::PARAM_STR);
+            $stmt->execute();
+    
+            // Commit transaction
+            $this->conn->commit();
+            
+            return ["success" => true, "message" => "Question and options added successfully!"];
+        } catch (PDOException $e) {
+            $this->conn->rollBack();
+            error_log("Database Error: " . $e->getMessage());
+            return ["success" => false, "message" => "Failed to add question."];
+        }
+    }
+    
 }

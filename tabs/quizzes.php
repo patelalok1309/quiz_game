@@ -29,7 +29,7 @@ $quizzes = $quiz->getQuizzes();
                     <td>{$q['username']}</td>
                     <td>
                         <button class='btn btn-danger btn-sm delete-quiz' data-id='{$q['id']}'>Delete</button>
-                        <a href='/quiz-api/quiz/{$q['id']}' class='btn btn-secondary btn-sm'>Manage</a>
+                        <a href='/quiz-api/quiz_questions.php/{$q['id']}' class='btn btn-secondary btn-sm'>Manage</a>
                     </td>
                 </tr>", $quizzes, array_keys($quizzes));
                 echo implode("\n", $rows);
@@ -82,12 +82,13 @@ $quizzes = $quiz->getQuizzes();
         $("#quizForm").submit(function(e) {
             e.preventDefault();
             $.ajax({
-                url: "add_quiz.php",
+                url: "/quiz-api/routes/api.php?action=add_quiz",
                 type: "POST",
                 data: $(this).serialize(),
                 success: function(response) {
                     let res = JSON.parse(response);
-                    if (res.success) {
+                    console.log(res);
+                    if (res["success"]) {
                         alert("Quiz Added Successfully!");
                         location.reload();
                     } else {
