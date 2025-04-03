@@ -33,6 +33,11 @@ $questions = $quiz->getQuestionsByQuizId($quizId);
                     <th>ID</th>
                     <th>Question Text</th>
                     <th>Question Type</th>
+                    <th>Option 1</th>
+                    <th>Option 2</th>
+                    <th>Option 3</th>
+                    <th>Option 4</th>
+                    <th>Answer</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -43,16 +48,22 @@ $questions = $quiz->getQuestionsByQuizId($quizId);
                             <td>" . ($index + 1) . "</td>
                             <td>{$question['question_text']}</td>
                             <td>{$question['question_type']}</td>
+                            <td>{$question['options'][0]}</td>
+                            <td>{$question['options'][1]}</td>
+                            <td>{$question['options'][2]}</td>
+                            <td>{$question['options'][3]}</td>
+                            <td>{$question['answer']}</td>
                             <td>
-                                <button class='btn btn-danger btn-sm delete-question' data-id='{$question['question_id']}'>Delete</button>
-                                <a href='/quiz-api/question_details.php/{$question['question_id']}' class='btn btn-secondary btn-sm'>Manage</a>
-                            </td>
-                        </tr>";
-                }
-                ?>
+                                <button id='delete-question' class='btn btn-danger btn-sm delete-question' data-id='{$question['question_id']}'>Delete</button>
+                                </td>
+                                </tr>";
+                            }
+                            ?>
             </tbody>
         </table>
-    </div>
+    </div>  
+    <!-- manage question  -->
+    <!-- <a href='/quiz-api/question_details.php/{$question['question_id']}' class='btn btn-secondary btn-sm'>Manage</a> -->
 
     <!-- Add Question Modal -->
     <div class="modal fade" id="addQuestionModal" tabindex="-1" aria-labelledby="addQuestionModalLabel" aria-hidden="true">
@@ -71,7 +82,7 @@ $questions = $quiz->getQuestionsByQuizId($quizId);
                         <div class="mb-3">
                             <label for="question_type" class="form-label">Question Type</label>
                             <select class="form-control" id="question_type" name="question_type" required>
-                                <option value="multiple_choice">Multiple Choice</option>
+                                <option value="mcq">Multiple Choice</option>
                                 <option value="true_false">True/False</option>
                             </select>
                         </div>
@@ -85,17 +96,17 @@ $questions = $quiz->getQuestionsByQuizId($quizId);
                         </div>
                         <div class="mb-3">
                             <label for="option3" class="form-label">Option 3</label>
-                            <input type="text" class="form-control" id="option3" name="option3">
+                            <input type="text" class="form-control" id="option3" name="option3" required>
                         </div>
                         <div class="mb-3">
                             <label for="option4" class="form-label">Option 4</label>
-                            <input type="text" class="form-control" id="option4" name="option4">
+                            <input type="text" class="form-control" id="option4" name="option4" required>
                         </div>
                         <div class="mb-3">
                             <label for="answer" class="form-label">Answer</label>
                             <input type="text" class="form-control" id="answer" name="answer" required>
                         </div>
-                        <input type="hidden" id="quiz_id" name="quiz_id" value="1"> <!-- Dynamic Quiz ID -->
+                        <input type="hidden" id="quiz_id" name="quiz_id" value=<?php echo $quizId; ?> <!-- Dynamic Quiz ID -->
                         <button type="submit" class="btn btn-success">Add Question</button>
                     </form>
                 </div>
@@ -112,6 +123,38 @@ $questions = $quiz->getQuestionsByQuizId($quizId);
             // Initialize DataTable
             $("#questionsTable").DataTable();
 
+            // Handle Delete Question button click (using event delegation)
+            $(document).on("click", ".delete-question", function() {
+                let questionId = $(this).data("id");
+
+                if (!confirm("Are you sure you want to delete this question?")) return;
+
+                $.ajax({
+                    url: "../delete_questions.php",
+                    type: "POST",
+                    data: {
+                        question_id: questionId
+                    },
+                    contentType: "application/x-www-form-urlencoded",
+                    success: function(res) {
+                        try {   
+                            if (res.success) {
+                                alert("Question Deleted Successfully!");
+                                location.reload();
+                            } else {
+                                alert("Error: " + res.message);
+                            }
+                        } catch (error) {
+                            alert("Unexpected error occurred.");
+                        }
+                    },
+                    error: function() {
+                        alert("Failed to delete question.");
+                    }
+                });
+            });
+
+
             // Handle Add Question form submission
             $("#addQuestionForm").submit(function(e) {
                 e.preventDefault();
@@ -120,12 +163,12 @@ $questions = $quiz->getQuestionsByQuizId($quizId);
                     quiz_id: $("#quiz_id").val(),
                     question_text: $("#question_text").val(),
                     question_type: $("#question_type").val(),
-                    options: JSON.stringify([
+                    options: [
                         $("#option1").val(),
                         $("#option2").val(),
                         $("#option3").val(),
                         $("#option4").val()
-                    ]),
+                    ],
                     answer: $("#answer").val()
                 };
 

@@ -82,17 +82,13 @@ $quizzes = $quiz->getQuizzes();
         $("#quizForm").submit(function(e) {
             e.preventDefault();
             $.ajax({
-                url: "/quiz-api/routes/api.php?action=add_quiz",
+                url: "add_quiz.php",
                 type: "POST",
                 data: $(this).serialize(),
                 success: function(response) {
                     let res = JSON.parse(response);
-                    console.log(res);
-                    if (res["success"]) {
-                        alert("Quiz Added Successfully!");
+                    if (res.success) {
                         location.reload();
-                    } else {
-                        alert("Error: " + res.message);
                     }
                 },
                 error: function() {
@@ -111,10 +107,15 @@ $quizzes = $quiz->getQuizzes();
                 data: {
                     quiz_id: quizId
                 },
-                success: function(response) {
-                    let res = JSON.parse(response);
+                success: function(res) {
                     if (res.success) {
-                        alert("Quiz Deleted Successfully!");
+                        let alertBox = $('<div class="alert alert-success">Quiz Deleted Successfully!</div>');
+                        $('body').append(alertBox);
+                        setTimeout(function() {
+                            alertBox.fadeOut("slow", function() {
+                                $(this).remove();
+                            });
+                        }, 1000);
                         location.reload();
                     } else {
                         alert("Error: " + res.message);
@@ -127,4 +128,3 @@ $quizzes = $quiz->getQuizzes();
         });
     });
 </script>
-

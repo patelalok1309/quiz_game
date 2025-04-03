@@ -15,5 +15,5 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     }
 
     $result = $quiz->addQuiz($title, $topic, $description, $created_by);
-    echo json_encode($result);
+    echo $result;
 }

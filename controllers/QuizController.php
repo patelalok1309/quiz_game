@@ -119,5 +119,120 @@ class QuizController
             return ["success" => false, "message" => "Failed to add question."];
         }
     }
+
+    public function deleteQuestion($question_id) {
+        try {
+            // Start Transaction
+            $this->conn->beginTransaction();
     
+            // Delete Options first (to maintain foreign key constraints)
+            $stmt = $this->conn->prepare("DELETE FROM options WHERE question_id = :question_id");
+            $stmt->bindParam(":question_id", $question_id, PDO::PARAM_INT);
+            $stmt->execute();
+    
+            // Delete Question
+            $stmt = $this->conn->prepare("DELETE FROM questions WHERE id = :question_id");
+            $stmt->bindParam(":question_id", $question_id, PDO::PARAM_INT);
+            $stmt->execute();
+    
+            // Commit transaction
+            $this->conn->commit();
+    
+            return ["success" => true, "message" => "Question deleted successfully!"];
+        } catch (PDOException $e) {
+            $this->conn->rollBack();
+            error_log("Database Error: " . $e->getMessage());
+            return ["success" => false, "message" => "Failed to delete question."];
+        }
+    }
+
+    public function getQuestionsByQuizIdWithoutAns($quiz_id)
+    {
+        try {
+            $stmt = $this->conn->prepare("
+                SELECT q.id AS question_id, q.question_text, q.question_type, 
+                       o.options
+                FROM questions q
+                LEFT JOIN options o ON q.id = o.question_id
+                WHERE q.quiz_id = :quiz_id
+            ");
+
+            $stmt->bindParam(":quiz_id", $quiz_id, PDO::PARAM_INT);
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // Process options JSON
+            foreach ($result as &$row) {
+                $row['options'] = json_decode($row['options'], true); // Decode JSON options
+            }
+            return $result;
+        } catch (PDOException $e) {
+            error_log("Database Error: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    public function calculateQuizResult($attemptId, $userId, $quizId, $responses) {
+        try {
+            $correctAnswers = 0;
+            $wrongAnswers = 0;
+            
+            // Get all correct answers for the quiz
+            $query = "SELECT q.id AS question_id, o.answer 
+                      FROM questions q 
+                      JOIN options o ON q.id = o.question_id 
+                      WHERE q.quiz_id = :quiz_id";
+                      
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(":quiz_id", $quizId, PDO::PARAM_INT);
+            $stmt->execute();
+            $questions = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+            // Store correct answers
+            $correctAnswersMap = [];
+            foreach ($questions as $question) {
+                $correctAnswersMap[$question['question_id']] = $question['answer'];
+            }
+    
+            $totalQuestions = count($correctAnswersMap);
+            $attemptedQuestions = 0;
+    
+            // Check user's responses
+            foreach ($responses as $response) {
+                $questionId = $response['question_id'];
+                $selectedAnswer = $response['answer'];
+    
+                if (isset($correctAnswersMap[$questionId])) {
+                    $attemptedQuestions++;
+                    if ($correctAnswersMap[$questionId] === $selectedAnswer) {
+                        $correctAnswers++;
+                    } else {
+                        $wrongAnswers++;
+                    }
+                }
+            }
+    
+            // Calculate unattempted questions
+            $unattemptedQuestions = $totalQuestions - $attemptedQuestions;
+    
+            // Update user_attempts table with score
+            $query = "UPDATE user_attempts SET score = :score WHERE id = :attempt_id AND user_id = :user_id";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(":score", $correctAnswers, PDO::PARAM_INT);
+            $stmt->bindParam(":attempt_id", $attemptId, PDO::PARAM_INT);
+            $stmt->bindParam(":user_id", $userId, PDO::PARAM_INT);
+            $stmt->execute();
+    
+            return [
+                "success" => true,
+                "total_questions" => $totalQuestions,
+                "correct_answers" => $correctAnswers,
+                "wrong_answers" => $wrongAnswers,
+                "unattempted_questions" => $unattemptedQuestions
+            ];
+        } catch (PDOException $e) {
+            error_log("Database Error: " . $e->getMessage());
+            return ["success" => false, "message" => "Failed to calculate quiz result."];
+        }
+    }
 }

@@ -119,7 +119,7 @@
             <p>Manage your application from here.</p>
         </div>
 
-        <!-- Questions -->
+        <!-- Questions --> 
         <?php include("./tabs/quizzes.php") ?>
 
         <!-- Users -->
