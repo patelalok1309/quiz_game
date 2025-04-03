@@ -1,4 +1,7 @@
 <?php
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 ?>
 <nav class="navbar navbar-expand-sm navbar-dark bg-dark px-5 ">
     <a class="navbar-brand" href="/quiz/index.php">Quiz</a>
@@ -8,24 +11,24 @@
         <ul class="navbar-nav me-auto mt-2 mt-lg-0">
             <li class="nav-item">
                 <?php
-                if (isset($_SESSION['username'])) {
-                    echo "<a class='nav-link' href='/quiz/components/logout.php'>logout</a>";
+                if (isset($_SESSION['user_name'])) {
+                    echo "<a class='nav-link' href='/quiz-api/logout.php'>logout</a>";
                 } else {
-                    echo "<a class='nav-link' href='/quiz/components/login.php'>login</a>";
+                    echo "<a class='nav-link' href='/quiz-api/login.php'>login</a>";
                 }
                 ?>
             </li>
             <li class="nav-item">
                 <?php
-                if (!isset($_SESSION['username'])) {
-                    echo "<a class='nav-link' href='/quiz/components/signup.php'>Sign Up</a>";
+                if (!isset($_SESSION['user_name'])) {
+                    echo "<a class='nav-link' href='/quiz-api/register.php'>Register</a>";
                 }
                 ?>
             </li>
             <li class="nav-item text-white ">
                 <?php
-                if (isset($_SESSION['username'])) {
-                    echo "<a class='nav-link' href='/quiz/components/history.php'>History</a>";
+                if (isset($_SESSION['user_name'])) {
+                    echo "<a class='nav-link' href='/quiz-api/history.php'>History</a>";
                 }
                 ?>
             </li>

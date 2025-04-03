@@ -8,6 +8,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
     <style>
         body {
             display: flex;
@@ -94,6 +96,11 @@
 </head>
 
 <body>
+
+    <!-- Navbar -->
+     <?php include 'components/navbar.php'; ?>
+
+
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <div class="d-flex justify-content-center align-items-center">
