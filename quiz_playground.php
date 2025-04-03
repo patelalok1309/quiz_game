@@ -267,8 +267,9 @@ session_start();
                         answers: answers
                     }),
                     success: function(response) {
+                    console.log(response);
                         if (response.success) {
-                            alert(`Quiz submitted! Correct: ${response.correct_answers}, Wrong: ${response.wrong_answers}, Unattempted: ${response.unattempted_questions}`);
+                            window.location.href = `/quiz-api/result.php?result_id=${response.result_id}`;
                         } else {
                             alert(response.message || "Failed to calculate score.");
                         }
