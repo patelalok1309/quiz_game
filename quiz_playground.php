@@ -16,6 +16,10 @@ session_start();
             background: #f4f4f4;
         }
 
+        .list-group {
+            margin-top: 2rem;
+        }
+
         .quiz-container {
             display: flex;
             width: 100%;
@@ -186,6 +190,7 @@ session_start();
                         alert(data.error);
                         return;
                     }
+                    console.log("data", data);
                     questions = data;
                     loadSidebar();
                     loadQuestion(0);
@@ -254,6 +259,11 @@ session_start();
                         });
                     }
                 });
+
+                console.log("quiz_id:", quizId);
+                console.log("user_id:", userId);
+                console.log("attempt_id:", attemptId);
+                console.log("answers:", answers);
 
                 // Send AJAX request
                 $.ajax({
