@@ -98,7 +98,6 @@
 <body>
 
     <!-- Navbar -->
-     <?php include 'components/navbar.php'; ?>
 
 
     <!-- Sidebar -->
@@ -126,14 +125,11 @@
             <p>Manage your application from here.</p>
         </div>
 
-        <!-- Questions --> 
+        <!-- Questions -->
         <?php include("./tabs/quizzes.php") ?>
 
         <!-- Users -->
-        <div class="tab-content" id="users">
-            <h3>User Management</h3>
-            <p>Manage registered users here.</p>
-        </div>
+        <?php include("./tabs/users.php") ?>
 
         <!-- Settings -->
         <div class="tab-content" id="settings">

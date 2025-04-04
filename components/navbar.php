@@ -4,7 +4,7 @@ if (session_status() == PHP_SESSION_NONE) {
 }
 ?>
 <nav class="navbar navbar-expand-sm navbar-dark bg-dark px-5 ">
-    <a class="navbar-brand" href="/quiz/index.php">Quiz</a>
+    <a class="navbar-brand" href="/quiz-api/home.php">Quiz</a>
     <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavId"
         aria-controls="collapsibleNavId" aria-expanded="false" aria-label="Toggle navigation"></button>
     <div class="collapse navbar-collapse" id="collapsibleNavId">
@@ -33,7 +33,7 @@ if (session_status() == PHP_SESSION_NONE) {
                 ?>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/quiz/components/dashboard.php">
+                <a class="nav-link" href="/quiz-api/dashboard.php">
                     <?php
                     if (isset($_SESSION['role'])) {
                         if ($_SESSION['role'] == 'admin') {
@@ -47,8 +47,9 @@ if (session_status() == PHP_SESSION_NONE) {
 
         <div class="nav-item d-flex flex-row">
             <h5 class="text-white mx-3">
-                <?php if (isset($_SESSION['username'])) {
-                    echo $_SESSION['username'];
+                <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="" width="32" height="32" style="margin-right: 8px;">
+                <?php if (isset($_SESSION['user_name'])) {
+                    echo ucwords($_SESSION['user_name']);
                     echo " <small>(" . $_SESSION['role'] . ")</small>";
                 }
                 ?>

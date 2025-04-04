@@ -70,7 +70,7 @@ $userName = ucwords($_SESSION['user_name']);
 <body>
 
     <!-- Navbar -->
-        <?php include('./components/navbar.php'); ?>
+    <?php include('./components/navbar.php'); ?>
 
     <!-- Main Container -->
     <div class="container mt-4">

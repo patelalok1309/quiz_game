@@ -23,10 +23,11 @@ session_start();
         .quiz-container {
             display: flex;
             width: 100%;
-            height: 100vh;
+            height: calc(100vh - 55.98px);
+            min-height: fit-content;
             background: white;
             border-radius: 5px;
-            overflow: hidden;
+            overflow: scroll;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
         }
 
@@ -140,6 +141,7 @@ session_start();
 
 <body>
 
+    <?php include('./components/navbar.php') ?>
     <div class="quiz-container">
         <div class="sidebar">
             <button class="close-btn d-md-none">✖</button> <!-- Close Button -->
@@ -156,6 +158,10 @@ session_start();
                         </h4>
                     </div>
                     <p> 👤 <?php echo ucwords($_SESSION["user_name"]) ?></p>
+                </div>
+                <div class="d-flex align-items-center gap-2 my-2">
+                    <span>Questions Attempted : </span>
+                    <span class="badge badge-md rounded-pill bg-info text-dark" id="attemptedQuestionsBadge">0/0</span>
                 </div>
                 <div id="questionBox" class="question-box">
                     <h5 id="questionText">Loading...</h5>
@@ -236,6 +242,7 @@ session_start();
                 $(".question-link").eq(index).addClass("active");
                 $("#prevBtn").prop("disabled", currentQuestionIndex === 0);
                 $("#nextBtn").prop("disabled", currentQuestionIndex === questions.length - 1);
+                $("#attemptedQuestionsBadge").text(`${Object.keys(selectedAnswers).length}/${questions.length}`);
             }
 
             $("#prevBtn").click(function() {
@@ -277,7 +284,7 @@ session_start();
                         answers: answers
                     }),
                     success: function(response) {
-                    console.log(response);
+                        console.log(response);
                         if (response.success) {
                             window.location.href = `/quiz-api/result.php?result_id=${response.result_id}`;
                         } else {

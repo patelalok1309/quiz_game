@@ -161,7 +161,7 @@ $questions = $quiz->getQuestionsByQuizId($quizId);
 
                 let formData = {
                     quiz_id: $("#quiz_id").val(),
-                    question_text: $("#question_text").val(),
+                    question_text: $("#question_text").val(),`
                     question_type: $("#question_type").val(),
                     options: [
                         $("#option1").val(),

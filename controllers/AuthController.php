@@ -110,4 +110,13 @@ class AuthController
             return ["status" => "error", "message" => "Invalid email or old password."];
         }
     }
+
+    public function getAllUsers()
+    {
+        $stmt = $this->conn->prepare("SELECT id, username, email, role FROM users");
+        $stmt->execute();
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return ["status" => "success", "data" => $result];
+    }
 }
+
